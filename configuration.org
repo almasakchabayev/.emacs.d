@@ -1,0 +1,208 @@
+#+TITLE: Emacs Configuration
+TODO what is the difference between 0 and nil, 1 and t, what is -1
+
+* Package Management
+
+#+BEGIN_SRC emacs-lisp
+  (require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
+  (cask-initialize)
+  (require 'pallet)
+#+END_SRC
+
+** Elixir setup
+
+#+BEGIN_SRC emacs-lisp
+  (require 'elixir-mode)
+  (require 'alchemist)
+#+END_SRC
+
+* UI preferences
+
+** Disable window chrome
+
+I don't usually use the menu or scroll bar, and they take up useful space.
+
+TODO why do we have when here
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (when window-system
+    (scroll-bar-mode -1))
+#+END_SRC
+
+** Hide the splash screen and banner
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t
+    inhibit-startup-echo-area-message t)
+#+END_SRC
+
+** Enable line numbers in the margin of the active buffer with linum-mode
+
+#+BEGIN_SRC emacs-lisp
+  (global-linum-mode 1)
+#+END_SRC
+
+** Setup theme
+
+TODO need to change and put under approopriate place frame-title-format
+#+BEGIN_SRC emacs-lisp
+  (load-theme 'zenburn t)
+#+END_SRC
+
+** Set default font and configure font-sizing
+
+#+BEGIN_SRC emacs-lisp
+  (setq hrs/default-font "Inconsolata")
+  (setq hrs/default-font-size 18)
+  (setq hrs/current-font-size hrs/default-font-size)
+
+  (setq hrs/font-change-increment 1.1)
+
+  (defun hrs/set-font-size ()
+    "Set the font to `hrs/default-font' at `hrs/current-font-size'."
+    (set-frame-font
+     (concat hrs/default-font "-" (number-to-string hrs/current-font-size))))
+
+  (defun hrs/reset-font-size ()
+    "Change font size back to `hrs/default-font-size'."
+    (interactive)
+    (setq hrs/current-font-size hrs/default-font-size)
+    (hrs/set-font-size))
+
+  (defun hrs/increase-font-size ()
+    "Increase current font size by a factor of `hrs/font-change-increment'."
+    (interactive)
+    (setq hrs/current-font-size
+          (ceiling (* hrs/current-font-size hrs/font-change-increment)))
+    (hrs/set-font-size))
+
+  (defun hrs/decrease-font-size ()
+    "Decrease current font size by a factor of `hrs/font-change-increment', down to a minimum size of 1."
+    (interactive)
+    (setq hrs/current-font-size
+          (max 1
+               (floor (/ hrs/current-font-size hrs/font-change-increment))))
+    (hrs/set-font-size))
+
+  (define-key global-map (kbd "C-)") 'hrs/reset-font-size)
+  (define-key global-map (kbd "C-+") 'hrs/increase-font-size)
+  (define-key global-map (kbd "C-=") 'hrs/increase-font-size)
+  (define-key global-map (kbd "C-_") 'hrs/decrease-font-size)
+  (define-key global-map (kbd "C--") 'hrs/decrease-font-size)
+
+  (hrs/reset-font-size)
+#+END_SRC
+
+** Highlight the current line
+
+=global-hl-line-mode= softly highlights the background color of the line containing point. It makes it a bit easier to find point, and it’s useful when pairing or presenting code.
+
+#+BEGIN_SRC emacs-lisp
+  (when window-system
+    (global-hl-line-mode))
+#+END_SRC
+
+** Highlight uncommitted changes
+
+Use the =diff-hl= package to highlight changed-and-uncommitted lines when programming.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'diff-hl)
+
+  (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+  (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
+#+END_SRC
+
+* Programming customizations
+
+I like shallow indentation, but tabs are displayed as 8 characters by default. This reduces that.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-width 2)
+#+END_SRC
+
+Treating terms in CamelCase symbols as separate words makes editing a little easier for me, so I like to use subword-mode everywhere.
+
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
+#+END_SRC
+* Ido mode
+
+#+BEGIN_SRC emacs-lisp
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1)
+#+END_SRC
+
+* Making Emacs auto indent
+
+#+BEGIN_SRC emacs-lisp
+  (define-key global-map (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
+* Publishing and task management with Org-mode
+
+** Display preferences
+
+I like to see an outline of pretty bullets instead of a list of asterisks
+
+*** TODO this does not work for some reason
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-bullets-mode t)))
+#+END_SRC
+
+I like seeing a little downward-pointing arrow instead of the usual ellipsis (...) that org displays when there’s stuff under a header.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis "⤵")
+#+END_SRC
+
+Use syntax highlighting in source blocks while editing.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-fontify-natively t)
+#+END_SRC
+
+Make TAB act as if it were issued in a buffer of the language’s major mode.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-tab-acts-natively t)
+#+END_SRC
+
+** Task and org-capture management
+
+Store my org files in ~/Google Drive/org, define the location of an index file (my main todo list) and archive finished tasks in ~/Google Drive/org/archive.org
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-directory "~/Google Drive/org")
+
+  (defun org-file-path (filename)
+    "Return the absolute address of an org file, given its relative name."
+    (concat (file-name-as-directory org-directory) filename))
+
+  (setq org-index-file (org-file-path "index.org"))
+  (setq org-archive-location
+        (concat (org-file-path "archive.org") "::* From %s"))
+#+END_SRC
+
+I store all my todos in ~/Google Drive/org/index.org, so I’d like to derive my agenda from there.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files (list org-index-file))
+#+END_SRC
+
+Record the time that a todo was archived.
+
+#+BEGIN_SRC emacs-lispn
+(setq org-log-done 'time)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cb" 'org-iswitchb)
+#+END_SRC
