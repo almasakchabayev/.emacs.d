@@ -1,28 +1,34 @@
 #+TITLE: Emacs Configuration
-TODO what is the difference between 0 and nil, 1 and t, what is -1
 
-* Package Management
+* Mac customizations
+Remap CapsLock to Control
+Disable C-<left> C-<right>
+* Initialization
+** Add Cask as Package Manager
 
 #+BEGIN_SRC emacs-lisp
   (require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
   (cask-initialize)
-  (require 'pallet)
 #+END_SRC
 
-** Elixir setup
+** Make all commands that work in shell work in Emacs's eshell
 
 #+BEGIN_SRC emacs-lisp
-  (require 'elixir-mode)
-  (require 'alchemist)
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+#+END_SRC
+
+** Save Emacs Session by default
+
+#+BEGIN_SRC emacs-lisp
+  (desktop-save-mode 1)
 #+END_SRC
 
 * UI preferences
-
 ** Disable window chrome
 
 I don't usually use the menu or scroll bar, and they take up useful space.
 
-TODO why do we have when here
 #+BEGIN_SRC emacs-lisp
   (tool-bar-mode 0)
   (menu-bar-mode 0)
@@ -37,15 +43,20 @@ TODO why do we have when here
     inhibit-startup-echo-area-message t)
 #+END_SRC
 
-** Enable line numbers in the margin of the active buffer with linum-mode
+** Turn on linum-mode to enable line numbers in the margin of the active buffer
 
 #+BEGIN_SRC emacs-lisp
   (global-linum-mode 1)
 #+END_SRC
 
+** Turn on toggle-truncate-lines for cleaner word wrapping
+
+#+BEGIN_SRC emacs-lisp
+  (set-default 'truncate-lines t)
+#+END_SRC
+
 ** Setup theme
 
-TODO need to change and put under approopriate place frame-title-format
 #+BEGIN_SRC emacs-lisp
   (load-theme 'zenburn t)
 #+END_SRC
@@ -53,45 +64,45 @@ TODO need to change and put under approopriate place frame-title-format
 ** Set default font and configure font-sizing
 
 #+BEGIN_SRC emacs-lisp
-  (setq hrs/default-font "Inconsolata")
-  (setq hrs/default-font-size 18)
-  (setq hrs/current-font-size hrs/default-font-size)
+  (setq my/default-font "Inconsolata")
+  (setq my/default-font-size 18)
+  (setq my/current-font-size my/default-font-size)
 
-  (setq hrs/font-change-increment 1.1)
+  (setq my/font-change-increment 1.1)
 
-  (defun hrs/set-font-size ()
-    "Set the font to `hrs/default-font' at `hrs/current-font-size'."
+  (defun my/set-font-size ()
+    "Set the font to `my/default-font' at `my/current-font-size'."
     (set-frame-font
-     (concat hrs/default-font "-" (number-to-string hrs/current-font-size))))
+     (concat my/default-font "-" (number-to-string my/current-font-size))))
 
-  (defun hrs/reset-font-size ()
-    "Change font size back to `hrs/default-font-size'."
+  (defun my/reset-font-size ()
+    "Change font size back to `my/default-font-size'."
     (interactive)
-    (setq hrs/current-font-size hrs/default-font-size)
-    (hrs/set-font-size))
+    (setq my/current-font-size my/default-font-size)
+    (my/set-font-size))
 
-  (defun hrs/increase-font-size ()
-    "Increase current font size by a factor of `hrs/font-change-increment'."
+  (defun my/increase-font-size ()
+    "Increase current font size by a factor of `my/font-change-increment'."
     (interactive)
-    (setq hrs/current-font-size
-          (ceiling (* hrs/current-font-size hrs/font-change-increment)))
-    (hrs/set-font-size))
+    (setq my/current-font-size
+          (ceiling (* my/current-font-size my/font-change-increment)))
+    (my/set-font-size))
 
-  (defun hrs/decrease-font-size ()
-    "Decrease current font size by a factor of `hrs/font-change-increment', down to a minimum size of 1."
+  (defun my/decrease-font-size ()
+    "Decrease current font size by a factor of `my/font-change-increment', down to a minimum size of 1."
     (interactive)
-    (setq hrs/current-font-size
+    (setq my/current-font-size
           (max 1
-               (floor (/ hrs/current-font-size hrs/font-change-increment))))
-    (hrs/set-font-size))
+               (floor (/ my/current-font-size my/font-change-increment))))
+    (my/set-font-size))
 
-  (define-key global-map (kbd "C-)") 'hrs/reset-font-size)
-  (define-key global-map (kbd "C-+") 'hrs/increase-font-size)
-  (define-key global-map (kbd "C-=") 'hrs/increase-font-size)
-  (define-key global-map (kbd "C-_") 'hrs/decrease-font-size)
-  (define-key global-map (kbd "C--") 'hrs/decrease-font-size)
+  (define-key global-map (kbd "C-)") 'my/reset-font-size)
+  (define-key global-map (kbd "C-+") 'my/increase-font-size)
+  (define-key global-map (kbd "C-=") 'my/increase-font-size)
+  (define-key global-map (kbd "C-_") 'my/decrease-font-size)
+  (define-key global-map (kbd "C--") 'my/decrease-font-size)
 
-  (hrs/reset-font-size)
+  (my/reset-font-size)
 #+END_SRC
 
 ** Highlight the current line
@@ -108,13 +119,30 @@ TODO need to change and put under approopriate place frame-title-format
 Use the =diff-hl= package to highlight changed-and-uncommitted lines when programming.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'diff-hl)
-
   (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
   (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
 #+END_SRC
 
-* Programming customizations
+* Customizations
+** Make M-o move between windows
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-o") 'other-window)
+#+END_SRC
+
+** Make S-<left>,... switch windows
+
+#+BEGIN_SRC emacs-lisp
+  (windmove-default-keybindings)
+#+END_SRC
+
+** Use spaces instead of tabs
+   
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+** Make default tab-width = 2
 
 I like shallow indentation, but tabs are displayed as 8 characters by default. This reduces that.
 
@@ -122,12 +150,94 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
   (setq-default tab-width 2)
 #+END_SRC
 
-Treating terms in CamelCase symbols as separate words makes editing a little easier for me, so I like to use subword-mode everywhere.
+** Make emacs auto indent
+
+#+BEGIN_SRC emacs-lisp
+  (define-key global-map (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
+** Make C-a toggle between the beginning of the line and the beginning of the code
+
+#+BEGIN_SRC emacs-lisp
+  (defun smarter-move-beginning-of-line (arg)
+    "Move point back to indentation of beginning of line.
+
+  Move point to the first non-whitespace character on this line.
+  If point is already there, move to the beginning of the line.
+  Effectively toggle between the first non-whitespace character and
+  the beginning of the line.
+
+  If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+  point reaches the beginning or end of the buffer, stop there."
+    (interactive "^p")
+    (setq arg (or arg 1))
+
+    ;; Move lines first
+    (when (/= arg 1)
+      (let ((line-move-visual nil))
+        (forward-line (1- arg))))
+
+    (let ((orig-point (point)))
+      (back-to-indentation)
+      (when (= orig-point (point))
+        (move-beginning-of-line 1))))
+
+  ;; remap C-a to `smarter-move-beginning-of-line'
+  (global-set-key [remap move-beginning-of-line]
+                  'smarter-move-beginning-of-line)
+#+END_SRC
+
+** Make C-d duplicate line or region
+
+#+BEGIN_SRC emacs-lisp
+  (defun duplicate-current-line-or-region (arg)
+  "Duplicates the current line or region ARG times.
+If there's no region, the current line will be duplicated. However, if
+there's a region, all lines that region covers will be duplicated."
+  (interactive "p")
+  (let (beg end (origin (point)))
+    (if (and mark-active (> (point) (mark)))
+        (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (let ((region (buffer-substring-no-properties beg end)))
+      (dotimes (i arg)
+        (goto-char end)
+        (newline)
+        (insert region)
+        (setq end (point)))
+      (goto-char (+ origin (* (length region) arg) arg)))))
+  (global-set-key (kbd "C-d") 'duplicate-current-line-or-region)
+#+END_SRC
+   
+** Comment/Uncomment line/region
+
+#+BEGIN_SRC emacs-lisp
+  (defun comment-dwim-line (&optional arg)
+    "Replacement for the comment-dwim command.
+    If no region is selected and current line is not blank and we are not at the end of the line,
+    then comment current line.
+    Replaces default behaviour of comment-dwim, when it inserts comment at the end of the line."
+    (interactive "*P")
+    (comment-normalize-vars)
+    (if (and (not (region-active-p)) (not (looking-at "[ \t]*$")))
+        (comment-or-uncomment-region (line-beginning-position) (line-end-position))
+      (comment-dwim arg)))
+
+  (global-set-key "\M-;" 'comment-dwim-line)
+#+END_SRC
+
+** Turn on subword-mode everywhere
+
+Treating terms in CamelCase symbols as separate words makes editing a little easier.
 
 #+BEGIN_SRC emacs-lisp
   (global-subword-mode 1)
 #+END_SRC
-* Ido mode
+
+** Turn on ido mode
 
 #+BEGIN_SRC emacs-lisp
   (setq ido-enable-flex-matching t)
@@ -135,14 +245,37 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (ido-mode 1)
 #+END_SRC
 
-* Making Emacs auto indent
+** Add neotree plugin
 
 #+BEGIN_SRC emacs-lisp
-  (define-key global-map (kbd "RET") 'newline-and-indent)
+  (global-set-key [f8] 'neotree-toggle)
+
+  ; (setq neo-smart-open t)
+  ; (setq projectile-switch-project-action 'neotree-projectile-action)
+  ; (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+#+END_SRC
+
+* Javascript
+** Make indentation width = 2
+
+#+BEGIN_SRC emacs-lisp
+  (setq js-indent-level 2)
+#+END_SRC
+
+** Use es6
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist `(,(rx ".js" string-end) . js2-mode))
+#+END_SRC
+
+* CSS
+** Make indentation width = 2
+
+#+BEGIN_SRC emacs-lisp
+  (setq css-indent-offset 2)
 #+END_SRC
 
 * Publishing and task management with Org-mode
-
 ** Display preferences
 
 I like to see an outline of pretty bullets instead of a list of asterisks
@@ -151,7 +284,7 @@ I like to see an outline of pretty bullets instead of a list of asterisks
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook
             (lambda ()
-              (org-bullets-mode t)))
+              (org-bullets-mode 1)))
 #+END_SRC
 
 I like seeing a little downward-pointing arrow instead of the usual ellipsis (...) that org displays when there’s stuff under a header.
