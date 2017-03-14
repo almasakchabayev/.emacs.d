@@ -2,8 +2,12 @@
 
 * Mac customizations
 Remap CapsLock to Control
-Disable C-<left> C-<right>
-
+Disable C-<left>,... in System Preferences
+install brew
+install nvm
+install elixir via brew
+install node via nvm
+npm i -g eslint babel-eslint eslint-config-airbnb-base eslint-plugin-import
 * Initialization
 ** Add Cask as Package Manager
 
@@ -15,14 +19,9 @@ Disable C-<left> C-<right>
 ** Make all commands that work in shell work in Emacs's eshell
 
 #+BEGIN_SRC emacs-lisp
+  (require 'exec-path-from-shell)
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
-#+END_SRC
-
-** Require necessary packages
-
-#+BEGIN_SRC emacs-lisp
-  (require 'flycheck)
 #+END_SRC
 
 ** Save Emacs Session by default
@@ -65,6 +64,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 ** Setup theme
 
 #+BEGIN_SRC emacs-lisp
+  (require 'zenburn-theme)
   (load-theme 'zenburn t)
 #+END_SRC
 
@@ -126,6 +126,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 Use the =diff-hl= package to highlight changed-and-uncommitted lines when programming.
 
 #+BEGIN_SRC emacs-lisp
+  (require 'diff-hl)
   (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
   (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
 #+END_SRC
@@ -219,7 +220,7 @@ there's a region, all lines that region covers will be duplicated."
   (global-set-key (kbd "C-d") 'duplicate-current-line-or-region)
 #+END_SRC
    
-** Make M-; Comment/Uncomment line/region
+** Make M-; comment/uncomment line/region
 
 #+BEGIN_SRC emacs-lisp
   (defun comment-dwim-line (&optional arg)
@@ -236,6 +237,7 @@ there's a region, all lines that region covers will be duplicated."
   (global-set-key "\M-;" 'comment-dwim-line)
 #+END_SRC
 
+* Modes
 ** Enable subword-mode everywhere
 
 Treating terms in CamelCase symbols as separate words makes editing a little easier.
@@ -244,7 +246,7 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (global-subword-mode 1)
 #+END_SRC
 
-** Enable ido mode
+** Enable ido-mode
 
 #+BEGIN_SRC emacs-lisp
   (setq ido-enable-flex-matching t)
@@ -255,6 +257,7 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
 ** Add neotree plugin
 
 #+BEGIN_SRC emacs-lisp
+  (require 'neotree)
   (global-set-key [f8] 'neotree-toggle)
 
   ; (setq neo-smart-open t)
@@ -262,37 +265,59 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   ; (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 #+END_SRC
 
-** Add flycheck-cask
+** Make flycheck use cask packages in cask projects
 
 #+BEGIN_SRC emacs-lisp
   (eval-after-load 'flycheck
     '(add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
 #+END_SRC
 
-** Enable Flycheck globally
+** Enable flycheck globally
 
 #+BEGIN_SRC emacs-lisp
+  (require 'flycheck)
   (global-flycheck-mode)
-#+END_SRC
-
-** Customize flycheck temp file prefix
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default flycheck-temp-prefix ".flycheck")
 #+END_SRC
 
 ** Enable drag-stuff mode to drug stuff around with M-<left>,...
 
 #+BEGIN_SRC emacs-lisp
+  (require 'drag-stuff)
   (drag-stuff-global-mode 1)
   (drag-stuff-define-keys)
 #+END_SRC
 
 * Javascript
-** Use web-mode for all js files
+** Make indentation width = 2 in json files
 
 #+BEGIN_SRC emacs-lisp
+  (require 'json-mode)
+  (setq json-reformat:indent-width 2)
+#+END_SRC
+
+** Use json-mode for json configuration files
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.babelrc\\'" . json-mode))
+  (add-to-list 'auto-mode-alist '("\\.eslintrc\\'" . json-mode))
+  (add-to-list 'auto-mode-alist '("\\.watchmanconfig\\'" . json-mode))
+#+END_SRC
+
+** Use web-mode for all js and jsx files
+
+#+BEGIN_SRC emacs-lisp
+  (require 'web-mode)
   (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
+#+END_SRC
+
+** Make web-mode open all javascript files as jsx
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'web-mode-hook
+    (lambda ()
+    (if (equal web-mode-content-type "javascript")
+    (web-mode-set-content-type "jsx")
+    (message "now set to: %s" web-mode-content-type))))
 #+END_SRC
 
 ** Make indentation width = 2
