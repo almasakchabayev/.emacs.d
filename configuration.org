@@ -3,6 +3,7 @@
 * Mac customizations
 Remap CapsLock to Control
 Disable C-<left> C-<right>
+
 * Initialization
 ** Add Cask as Package Manager
 
@@ -16,6 +17,12 @@ Disable C-<left> C-<right>
 #+BEGIN_SRC emacs-lisp
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
+#+END_SRC
+
+** Require necessary packages
+
+#+BEGIN_SRC emacs-lisp
+  (require 'flycheck)
 #+END_SRC
 
 ** Save Emacs Session by default
@@ -43,13 +50,13 @@ I don't usually use the menu or scroll bar, and they take up useful space.
     inhibit-startup-echo-area-message t)
 #+END_SRC
 
-** Turn on linum-mode to enable line numbers in the margin of the active buffer
+** Enable linum-mode to enable line numbers in the margin of the active buffer
 
 #+BEGIN_SRC emacs-lisp
   (global-linum-mode 1)
 #+END_SRC
 
-** Turn on toggle-truncate-lines for cleaner word wrapping
+** Enable toggle-truncate-lines for cleaner word wrapping
 
 #+BEGIN_SRC emacs-lisp
   (set-default 'truncate-lines t)
@@ -212,7 +219,7 @@ there's a region, all lines that region covers will be duplicated."
   (global-set-key (kbd "C-d") 'duplicate-current-line-or-region)
 #+END_SRC
    
-** Comment/Uncomment line/region
+** Make M-; Comment/Uncomment line/region
 
 #+BEGIN_SRC emacs-lisp
   (defun comment-dwim-line (&optional arg)
@@ -229,7 +236,7 @@ there's a region, all lines that region covers will be duplicated."
   (global-set-key "\M-;" 'comment-dwim-line)
 #+END_SRC
 
-** Turn on subword-mode everywhere
+** Enable subword-mode everywhere
 
 Treating terms in CamelCase symbols as separate words makes editing a little easier.
 
@@ -237,7 +244,7 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (global-subword-mode 1)
 #+END_SRC
 
-** Turn on ido mode
+** Enable ido mode
 
 #+BEGIN_SRC emacs-lisp
   (setq ido-enable-flex-matching t)
@@ -255,17 +262,103 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   ; (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 #+END_SRC
 
+** Add flycheck-cask
+
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load 'flycheck
+    '(add-hook 'flycheck-mode-hook #'flycheck-cask-setup))
+#+END_SRC
+
+** Enable Flycheck globally
+
+#+BEGIN_SRC emacs-lisp
+  (global-flycheck-mode)
+#+END_SRC
+
+** Customize flycheck temp file prefix
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default flycheck-temp-prefix ".flycheck")
+#+END_SRC
+
+** Enable drag-stuff mode to drug stuff around with M-<left>,...
+
+#+BEGIN_SRC emacs-lisp
+  (drag-stuff-global-mode 1)
+  (drag-stuff-define-keys)
+#+END_SRC
+
 * Javascript
+** Use web-mode for all js files
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
+#+END_SRC
+
 ** Make indentation width = 2
 
 #+BEGIN_SRC emacs-lisp
   (setq js-indent-level 2)
+  (defun my-web-mode-hook ()
+    "Hooks for Web mode. Adjust indents"
+    ;;; http://web-mode.org/
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-code-indent-offset 2))
+  (add-hook 'web-mode-hook  'my-web-mode-hook)
 #+END_SRC
 
-** Use es6
+** Make flycheck honour ~/.eslintrc
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-mode-alist `(,(rx ".js" string-end) . js2-mode))
+  (setq flycheck-eslintrc "~/.eslintrc")
+#+END_SRC
+
+** Disable jshint flycheck checking
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default flycheck-disabled-checkers
+    (append flycheck-disabled-checkers
+      '(javascript-jshint)))
+#+END_SRC
+
+** Use eslint with web mode
+
+#+BEGIN_SRC emacs-lisp
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+#+END_SRC
+
+** Disable json-jsonlist checking for json files
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default flycheck-disabled-checkers
+    (append flycheck-disabled-checkers
+      '(json-jsonlist)))
+#+END_SRC
+
+** Make flycheck use local node_modules eslint if exists
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+#+END_SRC
+
+** Tweak JSX syntax highlighting 
+
+#+BEGIN_SRC emacs-lisp
+  (defadvice web-mode-highlight-part (around tweak-jsx activate)
+    (if (equal web-mode-content-type "jsx")
+      (let ((web-mode-enable-part-face nil))
+        ad-do-it)
+      ad-do-it))
 #+END_SRC
 
 * CSS
