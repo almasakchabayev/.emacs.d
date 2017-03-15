@@ -287,6 +287,14 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   ; (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 #+END_SRC
 
+** Enable editorconfig
+
+#+BEGIN_SRC emacs-lisp
+  (require 'editorconfig')
+  (editorconfig-mode 1)
+#+END_SRC
+
+
 ** Make flycheck use cask packages in cask projects
 
 #+BEGIN_SRC emacs-lisp

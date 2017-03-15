@@ -4,6 +4,7 @@
 (depends-on "alchemist")
 (depends-on "diff-hl")
 (depends-on "drag-stuff")
+(depends-on "editorconfig")
 (depends-on "exec-path-from-shell")
 (depends-on "flycheck")
 (depends-on "flycheck-cask")
