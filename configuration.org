@@ -200,8 +200,8 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
 #+BEGIN_SRC emacs-lisp
   (defun duplicate-current-line-or-region (arg)
   "Duplicates the current line or region ARG times.
-If there's no region, the current line will be duplicated. However, if
-there's a region, all lines that region covers will be duplicated."
+  If there's no region, the current line will be duplicated. However, if
+  there's a region, all lines that region covers will be duplicated."
   (interactive "p")
   (let (beg end (origin (point)))
     (if (and mark-active (> (point) (mark)))
@@ -252,6 +252,28 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (setq ido-enable-flex-matching t)
   (setq ido-everywhere t)
   (ido-mode 1)
+#+END_SRC
+
+** Enable smex
+
+#+BEGIN_SRC emacs-lisp
+  (require 'smex)
+  (smex-initialize)
+
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+  ;; your old M-x.
+  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+#+END_SRC
+
+** Enable smartparens and add shortcuts
+
+#+BEGIN_SRC emacs-lisp
+  (smartparens-global-mode t)
+  (require 'smartparens-config)
+
+  (global-set-key (kbd "C-M-a") 'sp-beginning-of-sexp)
+  (global-set-key (kbd "C-M-e") 'sp-end-of-sexp)
 #+END_SRC
 
 ** Add neotree plugin

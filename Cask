@@ -10,5 +10,8 @@
 (depends-on "json-mode")
 (depends-on "neotree")
 (depends-on "nvm")
+(depends-on "projectile")
+(depends-on "smartparens")
+(depends-on "smex")
 (depends-on "web-mode")
 (depends-on "zenburn-theme")
