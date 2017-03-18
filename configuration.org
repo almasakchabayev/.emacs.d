@@ -9,14 +9,14 @@ install elixir via brew
 install node via nvm
 npm i -g eslint babel-eslint eslint-config-airbnb-base eslint-plugin-import
 * Initialization
-** Add Cask as Package Manager
+** Add cask as package manager
 
 #+BEGIN_SRC emacs-lisp
   (require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
   (cask-initialize)
 #+END_SRC
 
-** Make all commands that work in shell work in Emacs's eshell
+** Make all commands that work in shell work in emacs's eshell
 
 #+BEGIN_SRC emacs-lisp
   (require 'exec-path-from-shell)
@@ -24,10 +24,16 @@ npm i -g eslint babel-eslint eslint-config-airbnb-base eslint-plugin-import
     (exec-path-from-shell-initialize))
 #+END_SRC
 
-** Save Emacs Session by default
+** Save emacs Session by default
 
 #+BEGIN_SRC emacs-lisp
   (desktop-save-mode 1)
+#+END_SRC
+
+** Make emacs auto refresh all buffers when files have changed on disk
+
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode t)
 #+END_SRC
 
 * UI preferences
@@ -58,7 +64,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 ** Enable toggle-truncate-lines for cleaner word wrapping
 
 #+BEGIN_SRC emacs-lisp
-  (set-default 'truncate-lines t)
+  (setq-default truncate-lines t)
 #+END_SRC
 
 ** Setup theme
@@ -290,10 +296,9 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
 ** Enable editorconfig
 
 #+BEGIN_SRC emacs-lisp
-  (require 'editorconfig')
+  (require 'editorconfig)
   (editorconfig-mode 1)
 #+END_SRC
-
 
 ** Make flycheck use cask packages in cask projects
 
