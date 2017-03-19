@@ -319,7 +319,8 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
 #+BEGIN_SRC emacs-lisp
   (require 'drag-stuff)
   (drag-stuff-global-mode 1)
-  (drag-stuff-define-keys)
+  (define-key drag-stuff-mode-map (drag-stuff--kbd 'up) 'drag-stuff-up)
+  (define-key drag-stuff-mode-map (drag-stuff--kbd 'down) 'drag-stuff-down)
 #+END_SRC
 
 * Javascript
