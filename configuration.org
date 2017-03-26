@@ -1,13 +1,5 @@
 #+TITLE: Emacs Configuration
 
-* Mac customizations
-Remap CapsLock to Control
-Disable C-<left>,... in System Preferences
-install brew
-install nvm
-install elixir via brew
-install node via nvm
-npm i -g eslint babel-eslint eslint-config-airbnb-base eslint-plugin-import
 * Initialization
 ** Add cask as package manager
 
@@ -64,7 +56,8 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 ** Enable toggle-truncate-lines for cleaner word wrapping
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default truncate-lines t)
+  (setq-default truncate-lines nil)
+  (setq truncate-partial-width-windows nil)
 #+END_SRC
 
 ** Setup theme
@@ -138,21 +131,6 @@ Use the =diff-hl= package to highlight changed-and-uncommitted lines when progra
 #+END_SRC
 
 * Customizations
-** Make M-o move between windows
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-o") 'other-window)
-#+END_SRC
-
-** Make S-<left>,... switch windows
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c <left>")  'windmove-left)
-  (global-set-key (kbd "C-c <right>") 'windmove-right)
-  (global-set-key (kbd "C-c <up>")    'windmove-up)
-  (global-set-key (kbd "C-c <down>")  'windmove-down)
-#+END_SRC
-
 ** Use spaces instead of tabs
    
 #+BEGIN_SRC emacs-lisp
@@ -247,6 +225,15 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
 #+END_SRC
 
 * Modes
+** Enable xah-fly-keys.el
+
+#+BEGIN_SRC emacs-lisp
+  (require 'xah-fly-keys)
+  (xah-fly-keys-set-layout "qwerty")
+  (xah-fly-keys 1)
+  (define-key key-translation-map (kbd "<f13>") (kbd "<menu>"))
+#+END_SRC
+
 ** Enable subword-mode everywhere
 
 Treating terms in CamelCase symbols as separate words makes editing a little easier.

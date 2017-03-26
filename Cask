@@ -15,4 +15,5 @@
 (depends-on "smartparens")
 (depends-on "smex")
 (depends-on "web-mode")
+(depends-on "xah-fly-keys")
 (depends-on "zenburn-theme")
