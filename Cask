@@ -8,6 +8,7 @@
 (depends-on "exec-path-from-shell")
 (depends-on "flycheck")
 (depends-on "flycheck-cask")
+(depends-on "multiple-cursors")
 (depends-on "json-mode")
 (depends-on "neotree")
 (depends-on "nvm")

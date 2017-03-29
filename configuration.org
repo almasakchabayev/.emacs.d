@@ -313,6 +313,13 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (define-key drag-stuff-mode-map (drag-stuff--kbd 'down) 'drag-stuff-down)
 #+END_SRC
 
+** Enable multiple cursors
+
+#+BEGIN_SRC emacs-lisp
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+#+END_SRC
+
 * Javascript
 ** Make indentation width = 2 in json files
 
