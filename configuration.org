@@ -116,8 +116,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 =global-hl-line-mode= softly highlights the background color of the line containing point. It makes it a bit easier to find point, and it’s useful when pairing or presenting code.
 
 #+BEGIN_SRC emacs-lisp
-  (when window-system
-    (global-hl-line-mode))
+  (global-hl-line-mode)
 #+END_SRC
 
 ** Highlight uncommitted changes
@@ -224,6 +223,33 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
   (global-set-key "\M-;" 'comment-dwim-line)
 #+END_SRC
 
+** Mac OS X specific key bindings
+
+#+BEGIN_SRC emacs-lisp
+  (setq ns-command-modifier 'hyper)
+
+  (global-set-key [(hyper a)] 'mark-whole-buffer)
+  (global-set-key [(hyper v)] 'yank)
+  (global-set-key [(hyper c)] 'kill-ring-save)
+  (global-set-key [(hyper x)] 'kill-region)
+  (global-set-key [(hyper s)] 'save-buffer)
+  (global-set-key [(hyper l)] 'goto-line)
+  (global-set-key [(hyper o)] 'find-file)
+  (global-set-key [(hyper f)] 'isearch-forward)
+  (global-set-key [(hyper g)] 'isearch-repeat-forward)
+  (global-set-key [(hyper w)]
+                  (lambda () (interactive) (kill-buffer (current-buffer))))
+  (global-set-key [(hyper .)] 'keyboard-quit)
+
+  ;; I disabled this since I want to avoid hitting Cmd-q accidentally.
+  (global-set-key [(hyper q)] 'save-buffers-kill-emacs)
+
+ ;; (require 'redo) (global-set-key [(hyper z)] 'undo) ;; (global-set-key [(hyper shift z)] 'redo)
+
+  ;; To backward-kill-word, in Mac we usually do Option-Backspace
+  (global-set-key [(meta delete)]  'backward-kill-word)
+#+END_SRC
+
 * Modes
 ** Enable xah-fly-keys.el
 
@@ -231,7 +257,12 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
   (require 'xah-fly-keys)
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
-  (define-key key-translation-map (kbd "<f13>") (kbd "<menu>"))
+  (define-key key-translation-map (kbd "C-f") (kbd "<menu>"))
+
+  (defun on-hl-line-mode-hook () (global-hl-line-mode 1))
+  (defun off-hl-line-mode-hook () (global-hl-line-mode 0))
+  (add-hook 'xah-fly-command-mode-activate-hook 'off-hl-line-mode-hook)
+  (add-hook 'xah-fly-insert-mode-activate-hook  'on-hl-line-mode-hook)  
 #+END_SRC
 
 ** Enable subword-mode everywhere
