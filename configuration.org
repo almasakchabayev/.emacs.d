@@ -349,14 +349,12 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (global-flycheck-mode)
 #+END_SRC
 
-** Enable drag-stuff mode to drug stuff around with C-i and C-k
+** Enable drag-stuff mode to drug stuff around with M-i and M-k
 
 #+BEGIN_SRC emacs-lisp
-  (setq local-function-key-map (delq '(kp-tab . [9]) local-function-key-map))
-
   (defun my/bind-drag-stuff-keys ()
-    (global-set-key (kbd "C-i") 'drag-stuff-up)
-    (define-key drag-stuff-mode-map (kbd "C-k") 'drag-stuff-down))
+    (global-set-key (kbd "M-i") 'drag-stuff-up)
+    (global-set-key (kbd "M-k") 'drag-stuff-down))
 
   (add-hook 'drag-stuff-mode-hook
           'my/bind-drag-stuff-keys)
