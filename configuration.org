@@ -53,7 +53,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
   (global-linum-mode 1)
 #+END_SRC
 
-** Enable toggle-truncate-lines for cleaner word wrapping
+** Disable toggle-truncate-lines for cleaner word wrapping
 
 #+BEGIN_SRC emacs-lisp
   (set-default 'truncate-lines nil)
