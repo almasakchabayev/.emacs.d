@@ -58,6 +58,8 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 #+BEGIN_SRC emacs-lisp
   (set-default 'truncate-lines nil)
   (setq truncate-partial-width-windows nil)
+
+  (setq org-startup-truncated nil)
 #+END_SRC
 
 ** Setup theme
