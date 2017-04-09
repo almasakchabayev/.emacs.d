@@ -51,6 +51,8 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 
 #+BEGIN_SRC emacs-lisp
   (global-linum-mode 1)
+
+  (setq linum-format "%4d \u2502 ")
 #+END_SRC
 
 ** Disable toggle-truncate-lines for cleaner word wrapping
@@ -337,13 +339,19 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
   (global-flycheck-mode)
 #+END_SRC
 
-** Enable drag-stuff mode to drug stuff around with M-<left>,...
+** Enable drag-stuff mode to drug stuff around with C-i and C-k
 
 #+BEGIN_SRC emacs-lisp
-  (require 'drag-stuff)
+  (setq local-function-key-map (delq '(kp-tab . [9]) local-function-key-map))
+
+  (defun my/bind-drag-stuff-keys ()
+    (global-set-key (kbd "C-i") 'drag-stuff-up)
+    (define-key drag-stuff-mode-map (kbd "C-k") 'drag-stuff-down))
+
+  (add-hook 'drag-stuff-mode-hook
+          'my/bind-drag-stuff-keys)
+
   (drag-stuff-global-mode 1)
-  (define-key drag-stuff-mode-map (drag-stuff--kbd 'up) 'drag-stuff-up)
-  (define-key drag-stuff-mode-map (drag-stuff--kbd 'down) 'drag-stuff-down)
 #+END_SRC
 
 ** Enable multiple cursors
