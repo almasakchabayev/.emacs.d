@@ -56,7 +56,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
 ** Enable toggle-truncate-lines for cleaner word wrapping
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default truncate-lines nil)
+  (set-default 'truncate-lines nil)
   (setq truncate-partial-width-windows nil)
 #+END_SRC
 
@@ -111,12 +111,18 @@ I don't usually use the menu or scroll bar, and they take up useful space.
   (my/reset-font-size)
 #+END_SRC
 
-** Highlight the current line
+** Highlight the current line when in insert mode
 
 =global-hl-line-mode= softly highlights the background color of the line containing point. It makes it a bit easier to find point, and it’s useful when pairing or presenting code.
 
 #+BEGIN_SRC emacs-lisp
-  (global-hl-line-mode)
+  (require 'hl-line)
+  (set-face-background 'hl-line "#2B2B2B")
+
+  (defun on-hl-line-mode-hook () (global-hl-line-mode 1))
+  (defun off-hl-line-mode-hook () (global-hl-line-mode 0))
+  (add-hook 'xah-fly-command-mode-activate-hook 'off-hl-line-mode-hook)
+  (add-hook 'xah-fly-insert-mode-activate-hook  'on-hl-line-mode-hook)
 #+END_SRC
 
 ** Highlight uncommitted changes
@@ -257,12 +263,6 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
   (require 'xah-fly-keys)
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
-  (define-key key-translation-map (kbd "C-f") (kbd "<menu>"))
-
-  (defun on-hl-line-mode-hook () (global-hl-line-mode 1))
-  (defun off-hl-line-mode-hook () (global-hl-line-mode 0))
-  (add-hook 'xah-fly-command-mode-activate-hook 'off-hl-line-mode-hook)
-  (add-hook 'xah-fly-insert-mode-activate-hook  'on-hl-line-mode-hook)  
 #+END_SRC
 
 ** Enable subword-mode everywhere
@@ -458,66 +458,3 @@ Treating terms in CamelCase symbols as separate words makes editing a little eas
 #+END_SRC
 
 * Publishing and task management with Org-mode
-** Display preferences
-
-I like to see an outline of pretty bullets instead of a list of asterisks
-
-*** TODO this does not work for some reason
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (org-bullets-mode 1)))
-#+END_SRC
-
-I like seeing a little downward-pointing arrow instead of the usual ellipsis (...) that org displays when there’s stuff under a header.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-ellipsis "⤵")
-#+END_SRC
-
-Use syntax highlighting in source blocks while editing.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-src-fontify-natively t)
-#+END_SRC
-
-Make TAB act as if it were issued in a buffer of the language’s major mode.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-src-tab-acts-natively t)
-#+END_SRC
-
-** Task and org-capture management
-
-Store my org files in ~/Google Drive/org, define the location of an index file (my main todo list) and archive finished tasks in ~/Google Drive/org/archive.org
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-directory "~/Google Drive/org")
-
-  (defun org-file-path (filename)
-    "Return the absolute address of an org file, given its relative name."
-    (concat (file-name-as-directory org-directory) filename))
-
-  (setq org-index-file (org-file-path "index.org"))
-  (setq org-archive-location
-        (concat (org-file-path "archive.org") "::* From %s"))
-#+END_SRC
-
-I store all my todos in ~/Google Drive/org/index.org, so I’d like to derive my agenda from there.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files (list org-index-file))
-#+END_SRC
-
-Record the time that a todo was archived.
-
-#+BEGIN_SRC emacs-lispn
-(setq org-log-done 'time)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cb" 'org-iswitchb)
-#+END_SRC
