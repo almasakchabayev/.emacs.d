@@ -124,16 +124,16 @@ I don't usually use the menu or scroll bar, and they take up useful space.
   (set-face-background 'hl-line "#2B2B2B")
 
   (require 'col-highlight)
-  (set-face-balckground 'col-highlight "#2B2B2B")
+  (set-face-background 'col-highlight "#2B2B2B")
 
-  (defun on-hl-line-mode-hook () 
+  (defun on-hl-line-and-column-mode-hook () 
     (global-hl-line-mode 1)
     (column-highlight-mode 1))
-  (defun off-hl-line-mode-hook () 
+  (defun off-hl-line-and-column-mode-hook () 
     (global-hl-line-mode 0)
     (column-highlight-mode 0))
-  (add-hook 'xah-fly-command-mode-activate-hook 'off-hl-line-mode-hook)
-  (add-hook 'xah-fly-insert-mode-activate-hook  'on-hl-line-mode-hook)
+
+;;  Activation  in Modes/xah-fly-keys hooks
 #+END_SRC
 
 ** Highlight uncommitted changes
@@ -277,6 +277,16 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
 
   (define-key xah-fly-key-map (kbd "x") 'xah-cut-line-or-region)
   (define-key xah-fly-key-map (kbd "c") 'xah-copy-line-or-region)
+
+  (defun my/xah-fly-command-mode-activate-hook () 
+    (off-hl-line-and-column-mode-hook)
+    (define-key xah-fly-key-map (kbd "x") 'xah-cut-line-or-region)
+    (define-key xah-fly-key-map (kbd "c") 'xah-copy-line-or-region))
+  (defun my/xah-fly-insert-mode-activate-hook () 
+    (on-hl-line-and-column-mode-hook))
+
+  (add-hook 'xah-fly-command-mode-activate-hook 'my/xah-fly-command-mode-activate-hook)
+  (add-hook 'xah-fly-insert-mode-activate-hook  'my/xah-fly-insert-mode-activate-hook)
 #+END_SRC
 
 ** Enable which-key-mode
