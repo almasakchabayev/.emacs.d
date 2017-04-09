@@ -115,7 +115,7 @@ I don't usually use the menu or scroll bar, and they take up useful space.
   (my/reset-font-size)
 #+END_SRC
 
-** Highlight the current line when in insert mode
+** Highlight the current line and column when in insert mode
 
 =global-hl-line-mode= softly highlights the background color of the line containing point. It makes it a bit easier to find point, and it’s useful when pairing or presenting code.
 
@@ -123,8 +123,15 @@ I don't usually use the menu or scroll bar, and they take up useful space.
   (require 'hl-line)
   (set-face-background 'hl-line "#2B2B2B")
 
-  (defun on-hl-line-mode-hook () (global-hl-line-mode 1))
-  (defun off-hl-line-mode-hook () (global-hl-line-mode 0))
+  (require 'col-highlight)
+  (set-face-balckground 'col-highlight "#2B2B2B")
+
+  (defun on-hl-line-mode-hook () 
+    (global-hl-line-mode 1)
+    (column-highlight-mode 1))
+  (defun off-hl-line-mode-hook () 
+    (global-hl-line-mode 0)
+    (column-highlight-mode 0))
   (add-hook 'xah-fly-command-mode-activate-hook 'off-hl-line-mode-hook)
   (add-hook 'xah-fly-insert-mode-activate-hook  'on-hl-line-mode-hook)
 #+END_SRC

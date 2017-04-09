@@ -2,6 +2,7 @@
 (source melpa)
 
 (depends-on "alchemist")
+(depends-on "col-highlight")
 (depends-on "diff-hl")
 (depends-on "drag-stuff")
 (depends-on "editorconfig")
