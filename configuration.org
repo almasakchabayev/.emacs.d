@@ -223,7 +223,7 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
   (global-set-key (kbd "C-d") 'duplicate-current-line-or-region)
 #+END_SRC
    
-** Make M-; comment/uncomment line/region
+** Make M-; and C-; comment/uncomment line/region
 
 #+BEGIN_SRC emacs-lisp
   (defun comment-dwim-line (&optional arg)
@@ -237,34 +237,7 @@ I like shallow indentation, but tabs are displayed as 8 characters by default. T
         (comment-or-uncomment-region (line-beginning-position) (line-end-position))
       (comment-dwim arg)))
 
-  (global-set-key "\M-;" 'comment-dwim-line)
-#+END_SRC
-
-** Mac OS X specific key bindings
-
-#+BEGIN_SRC emacs-lisp
-  (setq ns-command-modifier 'hyper)
-
-  (global-set-key [(hyper a)] 'mark-whole-buffer)
-  (global-set-key [(hyper v)] 'yank)
-  (global-set-key [(hyper c)] 'kill-ring-save)
-  (global-set-key [(hyper x)] 'kill-region)
-  (global-set-key [(hyper s)] 'save-buffer)
-  (global-set-key [(hyper l)] 'goto-line)
-  (global-set-key [(hyper o)] 'find-file)
-  (global-set-key [(hyper f)] 'isearch-forward)
-  (global-set-key [(hyper g)] 'isearch-repeat-forward)
-  (global-set-key [(hyper w)]
-                  (lambda () (interactive) (kill-buffer (current-buffer))))
-  (global-set-key [(hyper .)] 'keyboard-quit)
-
-  ;; I disabled this since I want to avoid hitting Cmd-q accidentally.
-  (global-set-key [(hyper q)] 'save-buffers-kill-emacs)
-
- ;; (require 'redo) (global-set-key [(hyper z)] 'undo) ;; (global-set-key [(hyper shift z)] 'redo)
-
-  ;; To backward-kill-word, in Mac we usually do Option-Backspace
-  (global-set-key [(meta delete)]  'backward-kill-word)
+  (global-set-key (kbd "M-;") 'comment-dwim-line)
 #+END_SRC
 
 * Modes
